@@ -14,15 +14,6 @@
 
 ## Description
 With only one domain, you can create multiple different email addresses, similar to major email platforms. This project can be deployed on Cloudflare Workers to reduce server costs and build your own email service.
-## Project Showcase
-
-- [Live Demo](https://skymail.ink)<br>
-- [Deployment Guide](https://doc.skymail.ink/en/)<br>
-
-
-| ![](/doc/demo/demo1.png) | ![](/doc/demo/demo2.png) |
-|--------------------------|--------------------------|
-| ![](/doc/demo/demo3.png) | ![](/doc/demo/demo4.png) |
 
 ## Features
 
