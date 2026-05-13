@@ -1,7 +1,9 @@
 <p align="center">
     <img src="doc/demo/logo.png" width="80px" />
     <h1 align="center">Cloud Mail</h1>
-    <p align="center">基于 Cloudflare 的简约响应式邮箱服务，支持邮件发送、附件收发 🎉</p> 
+    <p align="center">基于 Cloudflare 的简约响应式邮箱服务，支持邮件发送、附件收发 🎉</p>
+    <p align="center"><strong>🔀 本仓库是基于 <a href="https://github.com/maillab/cloud-mail">maillab/cloud-mail</a> 的改进版</strong></p>
+    <p align="center">主要改进：将邮件发送方式从 <strong>Resend</strong> 替换为 <strong>Cloudflare Email Sending</strong>，实现零成本发件 🚀</p> 
     <p align="center">
         简体中文 | <a href="/README-en.md" style="margin-left: 5px">English </a>
     </p>
@@ -52,7 +54,7 @@
 
 - **💻 响应式设计**：响应式布局自动适配PC和大部分手机端浏览器
 
-- **📧 邮件发送**：集成Resend发送邮件，支持群发，内嵌图片和附件发送，发送状态查看
+- **📧 邮件发送**：集成 Cloudflare Email Sending 发送邮件（零成本、免外部 API Key），支持群发、内嵌图片和附件发送，发送状态查看
 
 - **🛡️ 管理员功能**：可以对用户，邮件进行管理，RABC权限控制对功能及使用资源限制
 
@@ -84,7 +86,7 @@
 
 - **UI框架**：[Element Plus](https://element-plus.org/) 
 
-- **邮件推送：** [Resend](https://resend.com/)
+- **邮件发送：** [Cloudflare Email Sending](https://developers.cloudflare.com/email-routing/email-workers/)
 
 - **缓存**：[Cloudflare KV](https://developers.cloudflare.com/kv/)
 

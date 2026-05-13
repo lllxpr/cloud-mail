@@ -1,7 +1,9 @@
 <p align="center">
     <img src="doc/demo/logo.png" width="80px" />
     <h1 align="center">Cloud Mail</h1>
-    <p align="center">A simple, responsive email service designed to run on Cloudflare Workers 🎉</p> 
+    <p align="center">A simple, responsive email service designed to run on Cloudflare Workers 🎉</p>
+    <p align="center"><strong>🔀 Forked from <a href="https://github.com/maillab/cloud-mail">maillab/cloud-mail</a></strong></p>
+    <p align="center">Key improvement: Replaced <strong>Resend</strong> with <strong>Cloudflare Email Sending</strong> for zero-cost outbound email 🚀</p> 
     <p align="center">
        <a href="/README.md" style="margin-left: 5px">简体中文</a> | English 
     </p>
