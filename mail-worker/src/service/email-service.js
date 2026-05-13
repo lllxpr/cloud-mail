@@ -7,7 +7,6 @@ import settingService from './setting-service';
 import accountService from './account-service';
 import BizError from '../error/biz-error';
 import emailUtils from '../utils/email-utils';
-import { Resend } from 'resend';
 import attService from './att-service';
 import { parseHTML } from 'linkedom';
 import userService from './user-service';
@@ -229,12 +228,6 @@ const emailService = {
 		}
 
 		const domain = emailUtils.getDomain(accountRow.email);
-		const resendToken = resendTokens[domain];
-
-		//如果接收方存在站外邮箱，又没有resend token
-		if (!resendToken && !allInternal) {
-			throw new BizError(t('noResendToken'));
-		}
 
 		//没有发件人名字自动截取
 		if (!name) {
@@ -256,38 +249,32 @@ const emailService = {
 
 		}
 
-		let resendResult = {};
+		let cfEmailResult = null;
 
-		//存在站外时邮箱全部由resend发送
+		//存在站外时邮箱全部由Cloudflare Email Sending发送
 		if (!allInternal) {
-
-			const resend = new Resend(resendToken);
 
 			const sendForm = {
 				from: `${name} <${accountRow.email}>`,
-				to: [...receiveEmail],
+				to: receiveEmail.join(','),
 				subject: subject,
 				text: text,
 				html: html,
-				attachments: [...imageDataList, ...attachments]
 			};
 
-			if (sendType === 'reply') {
+			if (sendType === 'reply' && emailRow.messageId) {
 				sendForm.headers = {
 					'in-reply-to': emailRow.messageId,
 					'references': emailRow.messageId
 				};
 			}
 
-			resendResult = await resend.emails.send(sendForm);
+			try {
+				cfEmailResult = await c.env.EMAIL.send(sendForm);
+			} catch (e) {
+				throw new BizError(e.message || 'Cloudflare Email Sending failed');
+			}
 
-		}
-
-		const { data, error } = resendResult;
-
-
-		if (error) {
-			throw new BizError(error.message);
 		}
 
 		imageDataList = imageDataList.map(item => ({...item, contentId: `<${item.contentId}>`}))
@@ -306,7 +293,7 @@ const emailService = {
 		emailData.status = emailConst.status.SENT;
 		emailData.type = emailConst.type.SEND;
 		emailData.userId = userId;
-		emailData.resendEmailId = data?.id;
+		emailData.resendEmailId = cfEmailResult?.messageId || null;
 
 		const recipient = [];
 
@@ -755,8 +742,8 @@ const emailService = {
 	},
 
 	async completeReceiveAll(c) {
-		await c.env.db.prepare(`UPDATE email as e SET status = ${emailConst.status.RECEIVE} WHERE status = ${emailConst.status.SAVING} AND EXISTS (SELECT 1 FROM account WHERE account_id = e.account_id)`).run();
-		await c.env.db.prepare(`UPDATE email as e SET status = ${emailConst.status.NOONE} WHERE status = ${emailConst.status.SAVING} AND NOT EXISTS (SELECT 1 FROM account WHERE account_id = e.account_id)`).run();
+		await c.env.db.prepare(`UPDATE email as e SET status = ${emailConst.status.RECEIVE}, is_del = ${isDel.NORMAL} WHERE status = ${emailConst.status.SAVING} AND EXISTS (SELECT 1 FROM account WHERE account_id = e.account_id)`).run();
+		await c.env.db.prepare(`UPDATE email as e SET status = ${emailConst.status.NOONE}, is_del = ${isDel.NORMAL} WHERE status = ${emailConst.status.SAVING} AND NOT EXISTS (SELECT 1 FROM account WHERE account_id = e.account_id)`).run();
 	},
 
 	async batchDelete(c, params) {
